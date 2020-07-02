@@ -1,0 +1,32 @@
+version: "3.1"
+services:
+  mongo:
+    container_name: mongo
+    image: mongo
+    restart: always
+    expose:
+      - 27017
+    volumes:
+      - ./data:/data/db
+
+#  back:
+#    container_name: back
+#    build: ./back
+#    restart: always
+#    ports:
+#      - 7666:7666
+#    environment:
+#      MONGO_HOST: "mongo"
+#      MONGO_PORT: 27017
+#      cron_parse: 1
+#      exchange: '/exchange'
+#    volumes:
+#      - ./exchange:/exchange
+#
+#  front:
+#    container_name: front
+#    build: ./front
+#    restart: always
+#    network_mode: host
+#    volumes:
+#      - ./exchange:/exchange
