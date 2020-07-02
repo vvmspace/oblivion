@@ -1,0 +1,16 @@
+{
+  "name": "oblivion-back",
+  "version": "1.0.0",
+  "description": "Oblivion backend",
+  "main": "index.js",
+  "scripts": {
+    "parse": "node parse.js"
+  },
+  "author": "VVM",
+  "license": "ISC",
+  "dependencies": {
+    "@tinkoff/invest-openapi-js-sdk": "^1.2.15",
+    "mongoose": "^5.9.21",
+    "puppeteer": "^5.0.0"
+  }
+}
