@@ -1,0 +1,41 @@
+version: "3.1"
+services:
+  jsbond_mongo:
+    container_name: jsbond_mongo
+    image: mongo
+    restart: always
+
+    volumes:
+    - ./data:/data/db
+
+  torproxy:
+    container_name: jsbond_torproxy
+    image: dperson/torproxy:latest
+    expose:
+      - 8118
+
+  back:
+    container_name: jsbond_back
+    build: ./src
+    restart: always
+    ports:
+      - 7666:3003
+    environment:
+      MONGO_HOST: "jsbond_mongo"
+      MONGO_PORT: 27017
+      PROXY_HOST: "jsbond_torproxy"
+      PROXY_PORT: 8118
+      exchange: '/exchange'
+      JSBOND_TOKEN: YOUR TOKEN HERE
+    volumes:
+#      - ./src:/app/src
+      - ./exchange:/exchange
+#    command: "ls"
+#
+#  front:
+#    container_name: front
+#    build: ./front
+#    restart: always
+#    network_mode: host
+#    volumes:
+#      - ./exchange:/exchange

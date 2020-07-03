@@ -1,4 +1,7 @@
 module.exports = {
+    server: {
+        port: process.env.JSBOND_API_PORT || 3003,
+    },
     mongodb: {
         db: process.env.DB_NAME || "oblivion",
         host: process.env.MONGO_HOST || 'localhost',
@@ -9,5 +12,9 @@ module.exports = {
             reconnectInterval: 100,
             useNewUrlParser: true,
         },
+    },
+    proxy: {
+        host: process.env.PROXY_HOST,
+        port: process.env.PROXY_PORT,
     }
 };

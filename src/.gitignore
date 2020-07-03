@@ -1,4 +1,6 @@
 .idea
+/data/
+/exchange/
 /node_modules/
 parse.sh
 parse.bat
