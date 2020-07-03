@@ -35,7 +35,7 @@ const parse = async (count, _bonds = null) => {
         const search = await api.searchOne({figi});
         // const info = await api.instrumentInfo({figi});
         // console.log({search, ticker});
-        await page.goto(`https://www.tink' + 'off.ru/invest/bonds/${ticker}`, { waitUntil: 'domcontentloaded' });
+        await page.goto(`ht${''}tps://www${''}.ti${''}nk${''}off.ru/in${''}ves${''}t/b${''}on${''}ds/${ticker}`, { waitUntil: 'domcontentloaded' });
         // await page.waitForNavigation();
         await page.screenshot({path: '/exchange/bond.png'});
         const initialState = await page.evaluate(() => initialState);
