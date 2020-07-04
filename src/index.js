@@ -12,11 +12,11 @@ app.use(cors());
 
     setInterval(async () => {
         try {
-            bonds = await parse(1, bonds);
+            bonds = await parse(5, bonds);
         } catch (e) {
             console.log(e.message);
         }
-    }, 15000);
+    }, 300000);
 
     app.get('/bonds', async (req, res) => {
         const bonds = await _bonds.find().sort({dateToClient: 1});
