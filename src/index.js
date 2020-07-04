@@ -12,7 +12,7 @@ app.use(cors());
 
     setInterval(async () => {
         try {
-            bonds = await parse(5, bonds);
+            bonds = await parse(15, bonds);
         } catch (e) {
             console.log(e.message);
         }
