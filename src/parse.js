@@ -25,48 +25,53 @@ const parse = async (count, _bonds = null) => {
         args
     })
     const page = await browser.newPage()
-    await page.goto(`https://2ip.ru`, { waitUntil: 'domcontentloaded' });
-    await page.screenshot({path: '/exchange/sh.png'});
-    for (let i = 0; i < count; i++) {
-        const bondData = bonds.instruments[Math.floor(Math.random() * bonds.instruments.length)]
-        console.log({bondData})
-        const {figi, ticker, isin, faceValue, lot, name, type, currency} = bondData
-        // const orderbook = await api.orderbookGet({figi, depth: 2});
-        const search = await api.searchOne({figi});
-        // const info = await api.instrumentInfo({figi});
-        // console.log({search, ticker});
-        await page.goto(`ht${''}tps://www${''}.ti${''}nk${''}off.ru/in${''}ves${''}t/b${''}on${''}ds/${ticker}`, { waitUntil: 'domcontentloaded' });
-        // await page.waitForNavigation();
-        await page.screenshot({path: '/exchange/bond.png'});
-        const initialState = await page.evaluate(() => initialState);
-        const data = JSON.parse(initialState).stores.investSecurity[ticker];
-        const {endDate, dateToClient} = data;
-        console.log({data, endDate, dateToClient});
-        let bond = await _bond.findOne({figi}).catch(e => e);
-        // console.log(bond);
-        if (!bond) {
-            bond = new _bond();
-            console.log(`New bond: ${ticker} ${name}`);
-        } else {
-            console.log(`Updating bond: ${ticker} ${name}`);
+    try {
+        await page.goto(`https://2ip.ru`, {waitUntil: 'domcontentloaded'});
+        await page.screenshot({path: '/exchange/sh.png'});
+        for (let i = 0; i < count; i++) {
+            const bondData = bonds.instruments[Math.floor(Math.random() * bonds.instruments.length)]
+            console.log({bondData})
+            const {figi, ticker, isin, faceValue, lot, name, type, currency} = bondData
+            // const orderbook = await api.orderbookGet({figi, depth: 2});
+            const search = await api.searchOne({figi});
+            // const info = await api.instrumentInfo({figi});
+            // console.log({search, ticker});
+            await page.goto(`ht${''}tps://www${''}.ti${''}nk${''}off.ru/in${''}ves${''}t/b${''}on${''}ds/${ticker}`, {waitUntil: 'domcontentloaded'});
+            // await page.waitForNavigation();
+            await page.screenshot({path: '/exchange/bond.png'});
+            const initialState = await page.evaluate(() => initialState);
+            const data = JSON.parse(initialState).stores.investSecurity[ticker];
+            const {endDate, dateToClient} = data;
+            console.log({data, endDate, dateToClient});
+            let bond = await _bond.findOne({figi}).catch(e => e);
+            // console.log(bond);
+            if (!bond) {
+                bond = new _bond();
+                console.log(`New bond: ${ticker} ${name}`);
+            } else {
+                console.log(`Updating bond: ${ticker} ${name}`);
+            }
+            bond.endDate = new Date(data.endDate).getTime();
+            bond.dateToClient = new Date(data.dateToClient).getTime();
+            bond.figi = figi;
+            bond.ticker = ticker;
+            bond.isin = isin;
+            bond.lot = lot;
+            bond.faceValue = faceValue;
+            bond.currency = currency;
+            bond.name = name;
+            bond.type = type;
+            bond.floatingCoupon = data.floatingCoupon;
+            bond.lastPrice = data.price.value;
+            bond.couponPeriodDays = data.couponPeriodDays;
+            bond.totalYield = data.totalYield;
+            bond.yieldToClient = data.yieldToClient;
+            await bond.save();
         }
-        bond.endDate = new Date(data.endDate).getTime();
-        bond.dateToClient = new Date(data.dateToClient).getTime();
-        bond.figi = figi;
-        bond.ticker = ticker;
-        bond.isin = isin;
-        bond.lot = lot;
-        bond.faceValue = faceValue;
-        bond.currency = currency;
-        bond.name = name;
-        bond.type = type;
-        bond.floatingCoupon = data.floatingCoupon;
-        bond.lastPrice = data.price.value;
-        bond.couponPeriodDays = data.couponPeriodDays;
-        bond.totalYield = data.totalYield;
-        bond.yieldToClient = data.yieldToClient;
-        await bond.save();
+    } catch (e) {
+        console.log('Error in iteration');
     }
+    await page.close();
     await browser.close();
     return bonds;
 }
