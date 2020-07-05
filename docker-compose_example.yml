@@ -30,6 +30,10 @@ services:
     volumes:
 #      - ./src:/app/src
       - ./exchange:/exchange
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
 #    command: "ls"
 #
 #  front:
