@@ -25,10 +25,10 @@ const parse = async (count, _bonds = null) => {
         args
     })
     const page = await browser.newPage()
-    try {
         await page.goto(`https://2ip.ru`, {waitUntil: 'domcontentloaded'});
         await page.screenshot({path: '/exchange/sh.png'});
         for (let i = 0; i < count; i++) {
+            try {
             const bondData = bonds.instruments[Math.floor(Math.random() * bonds.instruments.length)]
             console.log({bondData})
             const {figi, ticker, isin, faceValue, lot, name, type, currency} = bondData
@@ -41,36 +41,42 @@ const parse = async (count, _bonds = null) => {
             await page.screenshot({path: '/exchange/bond.png'});
             const initialState = await page.evaluate(() => initialState);
             const data = JSON.parse(initialState).stores.investSecurity[ticker];
-            const {endDate, dateToClient} = data;
-            console.log({data, endDate, dateToClient});
-            let bond = await _bond.findOne({figi}).catch(e => e);
-            // console.log(bond);
-            if (!bond) {
-                bond = new _bond();
-                console.log(`New bond: ${ticker} ${name}`);
+            const {endDate, dateToClient, price} = data;
+            if(price) {
+                console.log({data, endDate, dateToClient});
+                let bond = await _bond.findOne({figi}).catch(e => e);
+                console.log(bond);
+                if (!bond) {
+                    bond = new _bond();
+                    console.log(`New bond: ${ticker} ${name}`);
+                } else {
+                    console.log(`Updating bond: ${ticker} ${name}`);
+                }
+                console.log(bond);
+                bond.endDate = new Date(data.endDate).getTime();
+                bond.dateToClient = new Date(data.dateToClient).getTime();
+                bond.figi = figi;
+                bond.ticker = ticker;
+                bond.isin = isin;
+                bond.lot = lot;
+                bond.faceValue = faceValue;
+                bond.currency = currency;
+                bond.name = name;
+                bond.type = type;
+                bond.floatingCoupon = data.floatingCoupon;
+                bond.lastPrice = data.price.value;
+                bond.couponPeriodDays = data.couponPeriodDays;
+                bond.totalYield = data.totalYield;
+                bond.yieldToClient = data.yieldToClient;
+                await bond.save();
             } else {
-                console.log(`Updating bond: ${ticker} ${name}`);
+                console.log('NO PRICE', ticker)
             }
-            bond.endDate = new Date(data.endDate).getTime();
-            bond.dateToClient = new Date(data.dateToClient).getTime();
-            bond.figi = figi;
-            bond.ticker = ticker;
-            bond.isin = isin;
-            bond.lot = lot;
-            bond.faceValue = faceValue;
-            bond.currency = currency;
-            bond.name = name;
-            bond.type = type;
-            bond.floatingCoupon = data.floatingCoupon;
-            bond.lastPrice = data.price.value;
-            bond.couponPeriodDays = data.couponPeriodDays;
-            bond.totalYield = data.totalYield;
-            bond.yieldToClient = data.yieldToClient;
-            await bond.save();
+            } catch (e) {
+                console.log('Error in iteration', e.message);
+            }
+            console.log(count, i, count - i);
         }
-    } catch (e) {
-        console.log('Error in iteration');
-    }
     await page.close();
     await browser.close();
     return bonds;
