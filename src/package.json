@@ -13,7 +13,7 @@
     "@tinkoff/invest-openapi-js-sdk": "^1.2.15",
     "bluebird": "^3.7.2",
     "cors": "^2.8.5",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "mongoose": "^5.9.21",
     "mongoose-double": "0.0.1",
     "puppeteer": "^5.0.0",
